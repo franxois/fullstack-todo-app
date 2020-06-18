@@ -1,0 +1,18 @@
+overwrite: true
+schema: "back/src/typeDefs.ts"
+documents: "front/src/queries.ts"
+generates:
+  front/src/generated/graphql.tsx:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      withHooks: true
+      withComponent: false
+  back/src/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true

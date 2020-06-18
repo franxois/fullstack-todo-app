@@ -1,0 +1,21 @@
+{
+  "name": "fullstack-todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate": "npx graphql-codegen",
+    "wgenerate": "npx graphql-codegen -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-codegen/cli": "^1.15.0",
+    "@graphql-codegen/typescript": "^1.15.0",
+    "@graphql-codegen/typescript-operations": "^1.15.0",
+    "@graphql-codegen/typescript-resolvers": "^1.15.0",
+    "@graphql-codegen/typescript-urql": "^1.15.0",
+    "graphql": "^15.0.0"
+  }
+}

@@ -1,0 +1,30 @@
+version: "3.1"
+
+services:
+  db:
+    build:
+      context: ./db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+  front:
+    build:
+      context: ./front
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+  back:
+    build:
+      context: ./back
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+    ports:
+      - 4000:4000
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8080:8080
