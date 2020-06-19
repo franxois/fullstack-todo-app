@@ -7,6 +7,6 @@ RUN npm ci
 
 ADD . .
 
-RUN npm test
+# RUN npm test
 
 ENTRYPOINT [ "npm" , "run", "start"]
