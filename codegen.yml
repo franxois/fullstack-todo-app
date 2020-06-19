@@ -1,8 +1,8 @@
 overwrite: true
 schema: "back/src/typeDefs.ts"
-documents: "front/src/queries.ts"
+documents: "front/src/graphql/*.ts"
 generates:
-  front/src/generated/graphql.tsx:
+  front/src/graphql/generated/index.tsx:
     plugins:
       - typescript
       - typescript-operations
