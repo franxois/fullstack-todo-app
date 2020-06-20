@@ -1,10 +1,17 @@
 import { gql } from "apollo-server";
 
 export default gql`
+  enum PriorityLevel {
+    LOW
+    MEDIUM
+    HIGH
+  }
+
   type Todo {
     id: ID!
     created_at: Float! # Used to store bigint
     message: String!
+    priority: PriorityLevel!
   }
 
   type Query {
@@ -12,7 +19,7 @@ export default gql`
   }
 
   type Mutation {
-    todoAdd(message: String!): Todo!
+    todoAdd(message: String!, priority: PriorityLevel!): Todo!
   }
   schema {
     query: Query

@@ -2,15 +2,21 @@ import React, { useReducer } from "react";
 import {
   useGet_All_TodosQuery,
   useTodoAddMutation,
+  PriorityLevel,
 } from "../graphql/generated";
 
 const Main: React.FC = () => {
-  type Action = { type: "message"; message: string } | { type: "clear" };
-  type State = { message: string };
+  type Action =
+    | { type: "message"; message: string }
+    | { type: "priority"; priority: PriorityLevel }
+    | { type: "clear" };
+  type State = { message: string; priority: PriorityLevel };
   const reducer = (state: State, action: Action) => {
     switch (action.type) {
       case "message":
         return { ...state, message: action.message };
+      case "priority":
+        return { ...state, priority: action.priority };
       case "clear":
         return { ...state, message: "" };
     }
@@ -19,9 +25,10 @@ const Main: React.FC = () => {
   // Local state
   let [state, dispatch] = useReducer(reducer, {
     message: "",
+    priority: PriorityLevel.Low,
   });
 
-  const [todos] = useGet_All_TodosQuery();
+  const [todos, refreshTodo] = useGet_All_TodosQuery();
   const [newTodo, addTodo] = useTodoAddMutation();
 
   return (
@@ -29,16 +36,38 @@ const Main: React.FC = () => {
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          await addTodo({ message: state.message });
+          await addTodo({ message: state.message, priority: state.priority });
           dispatch({ type: "clear" });
+          refreshTodo();
         }}
       >
-        <input
-          value={state.message}
-          onChange={({ target }) =>
-            dispatch({ type: "message", message: target.value })
-          }
-        ></input>
+        <label>
+          Todo
+          <input
+            value={state.message}
+            onChange={({ target }) =>
+              dispatch({ type: "message", message: target.value })
+            }
+          ></input>
+        </label>
+        <label>
+          Priority
+          <select
+            value={state.priority}
+            onChange={({ target }) => {
+              dispatch({
+                type: "priority",
+                priority: target.value as PriorityLevel,
+              });
+            }}
+          >
+            {[PriorityLevel.Low, PriorityLevel.Medium, PriorityLevel.High].map(
+              (p) => (
+                <option value={p}>{p}</option>
+              )
+            )}
+          </select>
+        </label>
         {newTodo.error && (
           <span className="error">{newTodo.error.message}</span>
         )}

@@ -11,11 +11,18 @@ export type Scalars = {
   Float: number;
 };
 
+export enum PriorityLevel {
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  High = 'HIGH'
+}
+
 export type Todo = {
   __typename?: 'Todo';
   id: Scalars['ID'];
   created_at: Scalars['Float'];
   message: Scalars['String'];
+  priority: PriorityLevel;
 };
 
 export type Query = {
@@ -31,6 +38,7 @@ export type Mutation = {
 
 export type MutationTodoAddArgs = {
   message: Scalars['String'];
+  priority: PriorityLevel;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -112,6 +120,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  PriorityLevel: PriorityLevel;
   Todo: ResolverTypeWrapper<Todo>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -136,6 +145,7 @@ export type TodoResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  priority?: Resolver<ResolversTypes['PriorityLevel'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 }>;
 
@@ -144,7 +154,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  todoAdd?: Resolver<ResolversTypes['Todo'], ParentType, ContextType, RequireFields<MutationTodoAddArgs, 'message'>>;
+  todoAdd?: Resolver<ResolversTypes['Todo'], ParentType, ContextType, RequireFields<MutationTodoAddArgs, 'message' | 'priority'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{

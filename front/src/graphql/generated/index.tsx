@@ -12,11 +12,18 @@ export type Scalars = {
   Float: number;
 };
 
+export enum PriorityLevel {
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  High = 'HIGH'
+}
+
 export type Todo = {
   __typename?: 'Todo';
   id: Scalars['ID'];
   created_at: Scalars['Float'];
   message: Scalars['String'];
+  priority: PriorityLevel;
 };
 
 export type Query = {
@@ -32,10 +39,12 @@ export type Mutation = {
 
 export type MutationTodoAddArgs = {
   message: Scalars['String'];
+  priority: PriorityLevel;
 };
 
 export type TodoAddMutationVariables = Exact<{
   message: Scalars['String'];
+  priority: PriorityLevel;
 }>;
 
 
@@ -60,8 +69,8 @@ export type Get_All_TodosQuery = (
 
 
 export const TodoAddDocument = gql`
-    mutation todoAdd($message: String!) {
-  todoAdd(message: $message) {
+    mutation todoAdd($message: String!, $priority: PriorityLevel!) {
+  todoAdd(message: $message, priority: $priority) {
     id
   }
 }
