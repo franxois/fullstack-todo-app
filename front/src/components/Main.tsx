@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import {
-  useGet_All_TodosQuery,
-  useTodoAddMutation,
+  useAllTodosQuery,
+  useCreateTodoMutation,
   PriorityLevel,
 } from "../graphql/generated";
 
@@ -28,8 +28,8 @@ const Main: React.FC = () => {
     priority: PriorityLevel.Low,
   });
 
-  const [todos, refreshTodo] = useGet_All_TodosQuery();
-  const [newTodo, addTodo] = useTodoAddMutation();
+  const [todos, refreshTodo] = useAllTodosQuery();
+  const [newTodo, addTodo] = useCreateTodoMutation();
 
   return (
     <main>
@@ -63,7 +63,9 @@ const Main: React.FC = () => {
           >
             {[PriorityLevel.Low, PriorityLevel.Medium, PriorityLevel.High].map(
               (p) => (
-                <option value={p}>{p}</option>
+                <option value={p} key={p}>
+                  {p}
+                </option>
               )
             )}
           </select>
@@ -74,9 +76,14 @@ const Main: React.FC = () => {
         <input type="submit" value="Add" />
       </form>
       <ul>
-        {todos.data?.todos.map((t) => (
-          <li>{t.message}</li>
-        ))}
+        {todos.data?.allTodos?.nodes.map(
+          (t) =>
+            t && (
+              <li key={t.id}>
+                {t.message} {t.priority} {t.createdAt}
+              </li>
+            )
+        )}
       </ul>
     </main>
   );

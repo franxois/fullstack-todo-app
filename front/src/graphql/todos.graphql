@@ -1,0 +1,18 @@
+query allTodos {
+  allTodos {
+    nodes {
+      id
+      priority
+      createdAt
+      message
+    }
+  }
+}
+
+mutation createTodo($message: String!, $priority: PriorityLevel!) {
+  createTodo(input: { todo: { message: $message, priority: $priority } }) {
+    todo {
+      id
+    }
+  }
+}

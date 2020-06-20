@@ -2,4 +2,4 @@
 
 Fullstack project using docker-compose, postgres, react and graphql
 
-npx postgraphile -c "postgres://postgres:postgres@localhost" --watch
+npx postgraphile -c "postgres://postgres:postgres@localhost" -o --watch
