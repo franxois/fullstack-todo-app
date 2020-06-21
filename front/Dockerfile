@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:14-alpine3.12
 
 ADD package.json .
 ADD package-lock.json .
@@ -9,7 +9,7 @@ ADD . .
 
 RUN npm run build
 
-FROM node:14
+FROM node:14-alpine3.12
 COPY --from=0 /build /build
 RUN npm i -g serve
 

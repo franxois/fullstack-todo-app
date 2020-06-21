@@ -1,19 +1,20 @@
 import React from "react";
-import { Provider, createClient } from "urql";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
 import Main from "./components/Main";
 import "./App.scss";
 
-const GRAPHQL_BACKEND_URL = "http://localhost:5000/graphql";
+const GRAPHQL_BACKEND_URL = "http://localhost:4000/graphql";
 
-const client = createClient({
-  url: GRAPHQL_BACKEND_URL,
+const client = new ApolloClient({
+  uri: GRAPHQL_BACKEND_URL,
 });
 
 function App() {
   return (
-    <Provider value={client}>
+    <ApolloProvider client={client}>
       <Main />
-    </Provider>
+    </ApolloProvider>
   );
 }
 

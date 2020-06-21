@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:14-alpine3.12
 
 ADD package.json .
 ADD package-lock.json .
@@ -9,4 +9,4 @@ ADD . .
 
 # RUN npm test
 
-ENTRYPOINT [ "npm" , "run", "start"]
+ENTRYPOINT [ "npm" , "start"]

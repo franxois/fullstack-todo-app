@@ -4,6 +4,11 @@ import {
   useCreateTodoMutation,
   PriorityLevel,
 } from "../graphql/generated";
+import {
+  FcHighPriority,
+  FcMediumPriority,
+  FcLowPriority,
+} from "react-icons/fc";
 
 const Main: React.FC = () => {
   type Action =
@@ -28,15 +33,30 @@ const Main: React.FC = () => {
     priority: PriorityLevel.Low,
   });
 
-  const [todos, refreshTodo] = useAllTodosQuery();
-  const [newTodo, addTodo] = useCreateTodoMutation();
+  const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
+  const [addTodo, { error: errorNewTodo }] = useCreateTodoMutation();
+
+  const PriorityIcon: React.FC<{ level?: PriorityLevel | null }> = ({
+    level,
+  }) => {
+    switch (level) {
+      case PriorityLevel.High:
+        return <FcHighPriority />;
+      case PriorityLevel.Medium:
+        return <FcMediumPriority />;
+      default:
+        return <FcLowPriority />;
+    }
+  };
 
   return (
     <main>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          await addTodo({ message: state.message, priority: state.priority });
+          await addTodo({
+            variables: { message: state.message, priority: state.priority },
+          });
           dispatch({ type: "clear" });
           refreshTodo();
         }}
@@ -70,17 +90,15 @@ const Main: React.FC = () => {
             )}
           </select>
         </label>
-        {newTodo.error && (
-          <span className="error">{newTodo.error.message}</span>
-        )}
+        {errorNewTodo && <span className="error">{errorNewTodo.message}</span>}
         <input type="submit" value="Add" />
       </form>
       <ul>
-        {todos.data?.allTodos?.nodes.map(
+        {todos?.allTodos?.nodes.map(
           (t) =>
             t && (
               <li key={t.id}>
-                {t.message} {t.priority} {t.createdAt}
+                {t.message} <PriorityIcon level={t.priority} /> {t.createdAt}
               </li>
             )
         )}

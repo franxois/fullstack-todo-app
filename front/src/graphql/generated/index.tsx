@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
-import * as Urql from 'urql';
+import * as ApolloReactCommon from '@apollo/react-common';
+import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -352,9 +352,30 @@ export const AllTodosDocument = gql`
 }
     `;
 
-export function useAllTodosQuery(options: Omit<Urql.UseQueryArgs<AllTodosQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<AllTodosQuery>({ query: AllTodosDocument, ...options });
-};
+/**
+ * __useAllTodosQuery__
+ *
+ * To run a query within a React component, call `useAllTodosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllTodosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllTodosQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllTodosQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllTodosQuery, AllTodosQueryVariables>) {
+        return ApolloReactHooks.useQuery<AllTodosQuery, AllTodosQueryVariables>(AllTodosDocument, baseOptions);
+      }
+export function useAllTodosLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllTodosQuery, AllTodosQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AllTodosQuery, AllTodosQueryVariables>(AllTodosDocument, baseOptions);
+        }
+export type AllTodosQueryHookResult = ReturnType<typeof useAllTodosQuery>;
+export type AllTodosLazyQueryHookResult = ReturnType<typeof useAllTodosLazyQuery>;
+export type AllTodosQueryResult = ApolloReactCommon.QueryResult<AllTodosQuery, AllTodosQueryVariables>;
 export const CreateTodoDocument = gql`
     mutation createTodo($message: String!, $priority: PriorityLevel!) {
   createTodo(input: {todo: {message: $message, priority: $priority}}) {
@@ -364,7 +385,29 @@ export const CreateTodoDocument = gql`
   }
 }
     `;
+export type CreateTodoMutationFn = ApolloReactCommon.MutationFunction<CreateTodoMutation, CreateTodoMutationVariables>;
 
-export function useCreateTodoMutation() {
-  return Urql.useMutation<CreateTodoMutation, CreateTodoMutationVariables>(CreateTodoDocument);
-};
+/**
+ * __useCreateTodoMutation__
+ *
+ * To run a mutation, you first call `useCreateTodoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTodoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTodoMutation, { data, loading, error }] = useCreateTodoMutation({
+ *   variables: {
+ *      message: // value for 'message'
+ *      priority: // value for 'priority'
+ *   },
+ * });
+ */
+export function useCreateTodoMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateTodoMutation, CreateTodoMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateTodoMutation, CreateTodoMutationVariables>(CreateTodoDocument, baseOptions);
+      }
+export type CreateTodoMutationHookResult = ReturnType<typeof useCreateTodoMutation>;
+export type CreateTodoMutationResult = ApolloReactCommon.MutationResult<CreateTodoMutation>;
+export type CreateTodoMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateTodoMutation, CreateTodoMutationVariables>;
