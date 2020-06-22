@@ -11,6 +11,7 @@ http
         graphiql: true,
         enhanceGraphiql: true,
         enableCors: true,
+        retryOnInitFail: true,
       }
     )
   )

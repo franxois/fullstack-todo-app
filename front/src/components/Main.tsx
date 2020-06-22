@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React from "react";
 import {
   useAllTodosQuery,
   useCreateTodoMutation,
@@ -9,36 +9,15 @@ import {
   FcMediumPriority,
   FcLowPriority,
 } from "react-icons/fc";
+import { useFormik } from "formik";
 
 const Main: React.FC = () => {
-  type Action =
-    | { type: "message"; message: string }
-    | { type: "priority"; priority: PriorityLevel }
-    | { type: "clear" };
-  type State = { message: string; priority: PriorityLevel };
-  const reducer = (state: State, action: Action) => {
-    switch (action.type) {
-      case "message":
-        return { ...state, message: action.message };
-      case "priority":
-        return { ...state, priority: action.priority };
-      case "clear":
-        return { ...state, message: "" };
-    }
-  };
-
-  // Local state
-  let [state, dispatch] = useReducer(reducer, {
-    message: "",
-    priority: PriorityLevel.Low,
-  });
-
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
   const [addTodo, { error: errorNewTodo }] = useCreateTodoMutation();
 
-  const PriorityIcon: React.FC<{ level?: PriorityLevel | null }> = ({
-    level,
-  }) => {
+  const PriorityIcon: React.FC<{
+    level?: PriorityLevel | null;
+  }> = ({ level }) => {
     switch (level) {
       case PriorityLevel.High:
         return <FcHighPriority />;
@@ -49,37 +28,73 @@ const Main: React.FC = () => {
     }
   };
 
+  const TodoList = () => (
+    <ul>
+      {todos?.allTodos?.nodes.map(
+        (t) =>
+          t && (
+            <li key={t.id}>
+              {t.message} <PriorityIcon level={t.priority} /> {t.createdAt}
+            </li>
+          )
+      )}
+    </ul>
+  );
+
+  type TodoFormValues = {
+    message: string;
+    priority: PriorityLevel;
+  };
+
+  const formik = useFormik<TodoFormValues>({
+    initialValues: {
+      message: "",
+      priority: PriorityLevel.Low,
+    },
+    onSubmit: async (values, formikBag) => {
+      try {
+        await addTodo({ variables: { ...values } });
+        refreshTodo();
+        formikBag.resetForm();
+      } catch (e) {
+        // error is in errorNewTodo
+      }
+    },
+  });
+
+  const Field: React.FC<{ label: string; htmlFor: string }> = ({
+    label,
+    htmlFor,
+    children,
+  }) => (
+    <label htmlFor={htmlFor}>
+      {label}
+      {children}
+    </label>
+  );
+
+  interface MyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+  const MyInput: React.FC<MyInputProps> = (props) => <input {...props}></input>;
+
   return (
     <main>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await addTodo({
-            variables: { message: state.message, priority: state.priority },
-          });
-          dispatch({ type: "clear" });
-          refreshTodo();
-        }}
-      >
-        <label>
-          Todo
-          <input
-            value={state.message}
-            onChange={({ target }) =>
-              dispatch({ type: "message", message: target.value })
-            }
-          ></input>
-        </label>
-        <label>
-          Priority
+      <form onSubmit={formik.handleSubmit}>
+        <Field label="Todo" htmlFor="message">
+          <MyInput
+            id="message"
+            name="message"
+            value={formik.values.message}
+            onChange={formik.handleChange}
+            placeholder="what are you up to?"
+          ></MyInput>
+        </Field>
+
+        <Field label="Priority" htmlFor="priority">
           <select
-            value={state.priority}
-            onChange={({ target }) => {
-              dispatch({
-                type: "priority",
-                priority: target.value as PriorityLevel,
-              });
-            }}
+            id="priority"
+            name="priority"
+            value={formik.values.priority}
+            onChange={formik.handleChange}
           >
             {[PriorityLevel.Low, PriorityLevel.Medium, PriorityLevel.High].map(
               (p) => (
@@ -89,20 +104,11 @@ const Main: React.FC = () => {
               )
             )}
           </select>
-        </label>
+        </Field>
+        <input type="submit" value="Add" disabled={formik.isSubmitting} />
         {errorNewTodo && <span className="error">{errorNewTodo.message}</span>}
-        <input type="submit" value="Add" />
       </form>
-      <ul>
-        {todos?.allTodos?.nodes.map(
-          (t) =>
-            t && (
-              <li key={t.id}>
-                {t.message} <PriorityIcon level={t.priority} /> {t.createdAt}
-              </li>
-            )
-        )}
-      </ul>
+      <TodoList />
     </main>
   );
 };

@@ -4,6 +4,7 @@ CREATE TABLE todos (
     id integer primary key generated always as identity,
     message varchar,
     priority priority_level,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CHECK(length(message)>0)
 );
 
