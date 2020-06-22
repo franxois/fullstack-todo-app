@@ -9,7 +9,7 @@ import {
   FcMediumPriority,
   FcLowPriority,
 } from "react-icons/fc";
-import { useFormik } from "formik";
+import { Formik, Form, Field } from "formik";
 
 const Main: React.FC = () => {
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
@@ -46,23 +46,7 @@ const Main: React.FC = () => {
     priority: PriorityLevel;
   };
 
-  const formik = useFormik<TodoFormValues>({
-    initialValues: {
-      message: "",
-      priority: PriorityLevel.Low,
-    },
-    onSubmit: async (values, formikBag) => {
-      try {
-        await addTodo({ variables: { ...values } });
-        refreshTodo();
-        formikBag.resetForm();
-      } catch (e) {
-        // error is in errorNewTodo
-      }
-    },
-  });
-
-  const Field: React.FC<{ label: string; htmlFor: string }> = ({
+  const LabelWrapper: React.FC<{ label: string; htmlFor: string }> = ({
     label,
     htmlFor,
     children,
@@ -73,41 +57,81 @@ const Main: React.FC = () => {
     </label>
   );
 
-  interface MyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-  const MyInput: React.FC<MyInputProps> = (props) => <input {...props}></input>;
+  // const Fields = [
+  //   { name: "message", type: "MyInput" },
+  //   {
+  //     name: "priority",
+  //     type: "MySelect",
+  //     options: [
+  //       { label: "LOW", value: PriorityLevel.Low },
+  //       { label: "MEDIUM", value: PriorityLevel.Medium },
+  //       { label: "HIGH", value: PriorityLevel.High },
+  //     ],
+  //   },
+  // ];
+
+  // interface MySelectProps
+  //   extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  //   options: { label: string; value: any }[];
+  // }
+  // const MySelect: React.FC<MySelectProps> = ({ options, ...props }) => (
+  //   <select {...props}>
+  //     {options.map((o) => (
+  //       <option value={o.value} key={o.label}>
+  //         {o.label}
+  //       </option>
+  //     ))}
+  //   </select>
+  // );
 
   return (
     <main>
-      <form onSubmit={formik.handleSubmit}>
-        <Field label="Todo" htmlFor="message">
-          <MyInput
-            id="message"
-            name="message"
-            value={formik.values.message}
-            onChange={formik.handleChange}
-            placeholder="what are you up to?"
-          ></MyInput>
-        </Field>
-
-        <Field label="Priority" htmlFor="priority">
-          <select
-            id="priority"
-            name="priority"
-            value={formik.values.priority}
-            onChange={formik.handleChange}
-          >
-            {[PriorityLevel.Low, PriorityLevel.Medium, PriorityLevel.High].map(
-              (p) => (
-                <option value={p} key={p}>
-                  {p}
-                </option>
-              )
+      <Formik<TodoFormValues>
+        initialValues={{
+          message: "",
+          priority: PriorityLevel.Low,
+        }}
+        onSubmit={async (values, formikHelper) => {
+          try {
+            await addTodo({ variables: { ...values } });
+            refreshTodo();
+            formikHelper.resetForm();
+          } catch (e) {
+            // error is in errorNewTodo
+          }
+        }}
+      >
+        {(props) => (
+          <Form>
+            <LabelWrapper label="Todo" htmlFor="message">
+              <Field
+                id="message"
+                name="message"
+                placeholder="what are you up to?"
+              ></Field>
+            </LabelWrapper>
+            {props.touched.message && props.errors.message && (
+              <div id="feedback">{props.errors.message}</div>
             )}
-          </select>
-        </Field>
-        <input type="submit" value="Add" disabled={formik.isSubmitting} />
-        {errorNewTodo && <span className="error">{errorNewTodo.message}</span>}
-      </form>
+
+            <LabelWrapper label="Priority" htmlFor="priority">
+              <Field id="priority" as="select" name="priority">
+                <option value={PriorityLevel.Low}>Low</option>
+                <option value={PriorityLevel.Medium}>Medium</option>
+                <option value={PriorityLevel.High}>High</option>
+              </Field>
+            </LabelWrapper>
+            {props.touched.priority && props.errors.priority && (
+              <div id="feedback">{props.errors.priority}</div>
+            )}
+
+            <input type="submit" value="Add" disabled={props.isSubmitting} />
+            {errorNewTodo && (
+              <span className="error">{errorNewTodo.message}</span>
+            )}
+          </Form>
+        )}
+      </Formik>
       <TodoList />
     </main>
   );
