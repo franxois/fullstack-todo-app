@@ -1,0 +1,23 @@
+main {
+  max-width: 900px;
+  margin: auto;
+
+  span.error {
+    color: red;
+  }
+
+  ul.todoList {
+    li {
+      list-style-type: none;
+    }
+
+    li.doable:hover {
+      text-decoration: line-through;
+      cursor: pointer;
+    }
+  }
+
+  input[type="submit"] {
+    margin-top: 1em;
+  }
+}

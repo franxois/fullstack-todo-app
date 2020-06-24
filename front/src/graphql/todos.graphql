@@ -5,6 +5,7 @@ query allTodos {
       priority
       createdAt
       message
+      done
     }
   }
 }
@@ -13,6 +14,15 @@ mutation createTodo($message: String!, $priority: PriorityLevel!) {
   createTodo(input: { todo: { message: $message, priority: $priority } }) {
     todo {
       id
+    }
+  }
+}
+
+mutation setTodoDone($id: Int!) {
+  updateTodoById(input: { todoPatch: { done: true }, id: $id }) {
+    todo {
+      id
+      done
     }
   }
 }

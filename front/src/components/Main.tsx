@@ -2,18 +2,35 @@ import React from "react";
 import {
   useAllTodosQuery,
   useCreateTodoMutation,
+  useSetTodoDoneMutation,
   PriorityLevel,
 } from "../graphql/generated";
 import {
   FcHighPriority,
   FcMediumPriority,
   FcLowPriority,
+  FcCheckmark,
 } from "react-icons/fc";
 import { Formik, Form, Field } from "formik";
+import "./Main.scss";
 
 const Main: React.FC = () => {
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
   const [addTodo, { error: errorNewTodo }] = useCreateTodoMutation();
+  const [setTodoDone, { error: errorSetTotoDone }] = useSetTodoDoneMutation();
+
+  const GraphQLErrors = () => (
+    <div>
+      {[errorNewTodo, errorSetTotoDone].map(
+        (e) =>
+          e && (
+            <span className="error" key={e.message}>
+              {e.message}
+            </span>
+          )
+      )}
+    </div>
+  );
 
   const PriorityIcon: React.FC<{
     level?: PriorityLevel | null;
@@ -29,15 +46,32 @@ const Main: React.FC = () => {
   };
 
   const TodoList = () => (
-    <ul>
-      {todos?.allTodos?.nodes.map(
-        (t) =>
-          t && (
-            <li key={t.id}>
-              {t.message} <PriorityIcon level={t.priority} /> {t.createdAt}
-            </li>
-          )
-      )}
+    <ul className="todoList">
+      {todos?.allTodos?.nodes.map((t) => {
+        if (t) {
+          if (t.done) {
+            return (
+              <li key={t.id}>
+                <FcCheckmark />
+                {t.message}
+              </li>
+            );
+          } else {
+            return (
+              <li
+                key={t.id}
+                onClick={async () => {
+                  await setTodoDone({ variables: { id: t.id } });
+                }}
+                className="doable"
+              >
+                <PriorityIcon level={t.priority} /> {t.message} ( since{" "}
+                {new Date(t.createdAt).toLocaleString()})
+              </li>
+            );
+          }
+        }
+      })}
     </ul>
   );
 
@@ -56,33 +90,6 @@ const Main: React.FC = () => {
       {children}
     </label>
   );
-
-  // const Fields = [
-  //   { name: "message", type: "MyInput" },
-  //   {
-  //     name: "priority",
-  //     type: "MySelect",
-  //     options: [
-  //       { label: "LOW", value: PriorityLevel.Low },
-  //       { label: "MEDIUM", value: PriorityLevel.Medium },
-  //       { label: "HIGH", value: PriorityLevel.High },
-  //     ],
-  //   },
-  // ];
-
-  // interface MySelectProps
-  //   extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  //   options: { label: string; value: any }[];
-  // }
-  // const MySelect: React.FC<MySelectProps> = ({ options, ...props }) => (
-  //   <select {...props}>
-  //     {options.map((o) => (
-  //       <option value={o.value} key={o.label}>
-  //         {o.label}
-  //       </option>
-  //     ))}
-  //   </select>
-  // );
 
   return (
     <main>
@@ -126,9 +133,7 @@ const Main: React.FC = () => {
             )}
 
             <input type="submit" value="Add" disabled={props.isSubmitting} />
-            {errorNewTodo && (
-              <span className="error">{errorNewTodo.message}</span>
-            )}
+            <GraphQLErrors />
           </Form>
         )}
       </Formik>

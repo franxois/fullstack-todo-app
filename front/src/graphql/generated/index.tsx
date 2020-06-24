@@ -28,6 +28,7 @@ export type Query = Node & {
   /** Reads and enables pagination through a set of `Todo`. */
   allTodos?: Maybe<TodosConnection>;
   todoById?: Maybe<Todo>;
+  todoByMessage?: Maybe<Todo>;
   /** Reads a single `Todo` using its globally unique `ID`. */
   todo?: Maybe<Todo>;
 };
@@ -58,6 +59,12 @@ export type QueryTodoByIdArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
+export type QueryTodoByMessageArgs = {
+  message: Scalars['String'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
 export type QueryTodoArgs = {
   nodeId: Scalars['ID'];
 };
@@ -80,6 +87,8 @@ export enum TodosOrderBy {
   PriorityDesc = 'PRIORITY_DESC',
   CreatedAtAsc = 'CREATED_AT_ASC',
   CreatedAtDesc = 'CREATED_AT_DESC',
+  DoneAsc = 'DONE_ASC',
+  DoneDesc = 'DONE_DESC',
   PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
   PrimaryKeyDesc = 'PRIMARY_KEY_DESC'
 }
@@ -94,6 +103,8 @@ export type TodoCondition = {
   priority?: Maybe<PriorityLevel>;
   /** Checks for equality with the object’s `createdAt` field. */
   createdAt?: Maybe<Scalars['Datetime']>;
+  /** Checks for equality with the object’s `done` field. */
+  done?: Maybe<Scalars['Boolean']>;
 };
 
 export enum PriorityLevel {
@@ -121,9 +132,10 @@ export type Todo = Node & {
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   nodeId: Scalars['ID'];
   id: Scalars['Int'];
-  message?: Maybe<Scalars['String']>;
+  message: Scalars['String'];
   priority?: Maybe<PriorityLevel>;
-  createdAt?: Maybe<Scalars['Datetime']>;
+  createdAt: Scalars['Datetime'];
+  done?: Maybe<Scalars['Boolean']>;
 };
 
 /** A `Todo` edge in the connection. */
@@ -157,10 +169,14 @@ export type Mutation = {
   updateTodo?: Maybe<UpdateTodoPayload>;
   /** Updates a single `Todo` using a unique key and a patch. */
   updateTodoById?: Maybe<UpdateTodoPayload>;
+  /** Updates a single `Todo` using a unique key and a patch. */
+  updateTodoByMessage?: Maybe<UpdateTodoPayload>;
   /** Deletes a single `Todo` using its globally unique id. */
   deleteTodo?: Maybe<DeleteTodoPayload>;
   /** Deletes a single `Todo` using a unique key. */
   deleteTodoById?: Maybe<DeleteTodoPayload>;
+  /** Deletes a single `Todo` using a unique key. */
+  deleteTodoByMessage?: Maybe<DeleteTodoPayload>;
 };
 
 
@@ -183,6 +199,12 @@ export type MutationUpdateTodoByIdArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationUpdateTodoByMessageArgs = {
+  input: UpdateTodoByMessageInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteTodoArgs = {
   input: DeleteTodoInput;
 };
@@ -191,6 +213,12 @@ export type MutationDeleteTodoArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationDeleteTodoByIdArgs = {
   input: DeleteTodoByIdInput;
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
+export type MutationDeleteTodoByMessageArgs = {
+  input: DeleteTodoByMessageInput;
 };
 
 /** All input for the create `Todo` mutation. */
@@ -203,9 +231,10 @@ export type CreateTodoInput = {
 
 /** An input for mutations affecting `Todo` */
 export type TodoInput = {
-  message?: Maybe<Scalars['String']>;
+  message: Scalars['String'];
   priority?: Maybe<PriorityLevel>;
   createdAt?: Maybe<Scalars['Datetime']>;
+  done?: Maybe<Scalars['Boolean']>;
 };
 
 /** The output of our create `Todo` mutation. */
@@ -242,6 +271,7 @@ export type TodoPatch = {
   message?: Maybe<Scalars['String']>;
   priority?: Maybe<PriorityLevel>;
   createdAt?: Maybe<Scalars['Datetime']>;
+  done?: Maybe<Scalars['Boolean']>;
 };
 
 /** The output of our update `Todo` mutation. */
@@ -270,6 +300,15 @@ export type UpdateTodoByIdInput = {
   /** An object where the defined keys will be set on the `Todo` being updated. */
   todoPatch: TodoPatch;
   id: Scalars['Int'];
+};
+
+/** All input for the `updateTodoByMessage` mutation. */
+export type UpdateTodoByMessageInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars['String']>;
+  /** An object where the defined keys will be set on the `Todo` being updated. */
+  todoPatch: TodoPatch;
+  message: Scalars['String'];
 };
 
 /** All input for the `deleteTodo` mutation. */
@@ -307,6 +346,13 @@ export type DeleteTodoByIdInput = {
   id: Scalars['Int'];
 };
 
+/** All input for the `deleteTodoByMessage` mutation. */
+export type DeleteTodoByMessageInput = {
+  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
+  clientMutationId?: Maybe<Scalars['String']>;
+  message: Scalars['String'];
+};
+
 export type AllTodosQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -316,7 +362,7 @@ export type AllTodosQuery = (
     { __typename?: 'TodosConnection' }
     & { nodes: Array<Maybe<(
       { __typename?: 'Todo' }
-      & Pick<Todo, 'id' | 'priority' | 'createdAt' | 'message'>
+      & Pick<Todo, 'id' | 'priority' | 'createdAt' | 'message' | 'done'>
     )>> }
   )> }
 );
@@ -338,6 +384,22 @@ export type CreateTodoMutation = (
   )> }
 );
 
+export type SetTodoDoneMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type SetTodoDoneMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTodoById?: Maybe<(
+    { __typename?: 'UpdateTodoPayload' }
+    & { todo?: Maybe<(
+      { __typename?: 'Todo' }
+      & Pick<Todo, 'id' | 'done'>
+    )> }
+  )> }
+);
+
 
 export const AllTodosDocument = gql`
     query allTodos {
@@ -347,6 +409,7 @@ export const AllTodosDocument = gql`
       priority
       createdAt
       message
+      done
     }
   }
 }
@@ -411,3 +474,38 @@ export function useCreateTodoMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type CreateTodoMutationHookResult = ReturnType<typeof useCreateTodoMutation>;
 export type CreateTodoMutationResult = ApolloReactCommon.MutationResult<CreateTodoMutation>;
 export type CreateTodoMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateTodoMutation, CreateTodoMutationVariables>;
+export const SetTodoDoneDocument = gql`
+    mutation setTodoDone($id: Int!) {
+  updateTodoById(input: {todoPatch: {done: true}, id: $id}) {
+    todo {
+      id
+      done
+    }
+  }
+}
+    `;
+export type SetTodoDoneMutationFn = ApolloReactCommon.MutationFunction<SetTodoDoneMutation, SetTodoDoneMutationVariables>;
+
+/**
+ * __useSetTodoDoneMutation__
+ *
+ * To run a mutation, you first call `useSetTodoDoneMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetTodoDoneMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setTodoDoneMutation, { data, loading, error }] = useSetTodoDoneMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSetTodoDoneMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<SetTodoDoneMutation, SetTodoDoneMutationVariables>) {
+        return ApolloReactHooks.useMutation<SetTodoDoneMutation, SetTodoDoneMutationVariables>(SetTodoDoneDocument, baseOptions);
+      }
+export type SetTodoDoneMutationHookResult = ReturnType<typeof useSetTodoDoneMutation>;
+export type SetTodoDoneMutationResult = ApolloReactCommon.MutationResult<SetTodoDoneMutation>;
+export type SetTodoDoneMutationOptions = ApolloReactCommon.BaseMutationOptions<SetTodoDoneMutation, SetTodoDoneMutationVariables>;
