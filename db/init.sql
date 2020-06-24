@@ -9,3 +9,6 @@ CREATE TABLE todos (
     CHECK(length(message)>0)
 );
 
+-- remove delete mutation from GraphQL
+comment on table public.todos is
+  E'@omit delete';

@@ -52,8 +52,7 @@ const Main: React.FC = () => {
           if (t.done) {
             return (
               <li key={t.id}>
-                <FcCheckmark />
-                {t.message}
+                <FcCheckmark /> {t.message}
               </li>
             );
           } else {

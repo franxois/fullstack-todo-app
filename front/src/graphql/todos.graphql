@@ -1,5 +1,5 @@
 query allTodos {
-  allTodos {
+  allTodos(orderBy: CREATED_AT_DESC) {
     nodes {
       id
       priority

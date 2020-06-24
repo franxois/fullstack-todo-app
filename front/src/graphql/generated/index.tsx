@@ -171,12 +171,6 @@ export type Mutation = {
   updateTodoById?: Maybe<UpdateTodoPayload>;
   /** Updates a single `Todo` using a unique key and a patch. */
   updateTodoByMessage?: Maybe<UpdateTodoPayload>;
-  /** Deletes a single `Todo` using its globally unique id. */
-  deleteTodo?: Maybe<DeleteTodoPayload>;
-  /** Deletes a single `Todo` using a unique key. */
-  deleteTodoById?: Maybe<DeleteTodoPayload>;
-  /** Deletes a single `Todo` using a unique key. */
-  deleteTodoByMessage?: Maybe<DeleteTodoPayload>;
 };
 
 
@@ -201,24 +195,6 @@ export type MutationUpdateTodoByIdArgs = {
 /** The root mutation type which contains root level fields which mutate data. */
 export type MutationUpdateTodoByMessageArgs = {
   input: UpdateTodoByMessageInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteTodoArgs = {
-  input: DeleteTodoInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteTodoByIdArgs = {
-  input: DeleteTodoByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteTodoByMessageArgs = {
-  input: DeleteTodoByMessageInput;
 };
 
 /** All input for the create `Todo` mutation. */
@@ -311,48 +287,6 @@ export type UpdateTodoByMessageInput = {
   message: Scalars['String'];
 };
 
-/** All input for the `deleteTodo` mutation. */
-export type DeleteTodoInput = {
-  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
-  clientMutationId?: Maybe<Scalars['String']>;
-  /** The globally unique `ID` which will identify a single `Todo` to be deleted. */
-  nodeId: Scalars['ID'];
-};
-
-/** The output of our delete `Todo` mutation. */
-export type DeleteTodoPayload = {
-  __typename?: 'DeleteTodoPayload';
-  /** The exact same `clientMutationId` that was provided in the mutation input, unchanged and unused. May be used by a client to track mutations. */
-  clientMutationId?: Maybe<Scalars['String']>;
-  /** The `Todo` that was deleted by this mutation. */
-  todo?: Maybe<Todo>;
-  deletedTodoId?: Maybe<Scalars['ID']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** An edge for our `Todo`. May be used by Relay 1. */
-  todoEdge?: Maybe<TodosEdge>;
-};
-
-
-/** The output of our delete `Todo` mutation. */
-export type DeleteTodoPayloadTodoEdgeArgs = {
-  orderBy?: Maybe<Array<TodosOrderBy>>;
-};
-
-/** All input for the `deleteTodoById` mutation. */
-export type DeleteTodoByIdInput = {
-  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
-  clientMutationId?: Maybe<Scalars['String']>;
-  id: Scalars['Int'];
-};
-
-/** All input for the `deleteTodoByMessage` mutation. */
-export type DeleteTodoByMessageInput = {
-  /** An arbitrary string value with no semantic meaning. Will be included in the payload verbatim. May be used to track mutations by the client. */
-  clientMutationId?: Maybe<Scalars['String']>;
-  message: Scalars['String'];
-};
-
 export type AllTodosQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -403,7 +337,7 @@ export type SetTodoDoneMutation = (
 
 export const AllTodosDocument = gql`
     query allTodos {
-  allTodos {
+  allTodos(orderBy: CREATED_AT_DESC) {
     nodes {
       id
       priority
