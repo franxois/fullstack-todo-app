@@ -11,8 +11,9 @@ import {
   FcLowPriority,
   FcCheckmark,
 } from "react-icons/fc";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form } from "formik";
 import "./Main.scss";
+import { MyField } from "./MyField";
 
 const Main: React.FC = () => {
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
@@ -79,17 +80,6 @@ const Main: React.FC = () => {
     priority: PriorityLevel;
   };
 
-  const LabelWrapper: React.FC<{ label: string; htmlFor: string }> = ({
-    label,
-    htmlFor,
-    children,
-  }) => (
-    <label htmlFor={htmlFor}>
-      {label}
-      {children}
-    </label>
-  );
-
   return (
     <main>
       <Formik<TodoFormValues>
@@ -109,27 +99,21 @@ const Main: React.FC = () => {
       >
         {(props) => (
           <Form>
-            <LabelWrapper label="Todo" htmlFor="message">
-              <Field
-                id="message"
-                name="message"
-                placeholder="what are you up to?"
-              ></Field>
-            </LabelWrapper>
-            {props.touched.message && props.errors.message && (
-              <div id="feedback">{props.errors.message}</div>
-            )}
+            <MyField name="message" label="Todo">
+              {(props) => (
+                <input placeholder="what are you up to?" {...props}></input>
+              )}
+            </MyField>
 
-            <LabelWrapper label="Priority" htmlFor="priority">
-              <Field id="priority" as="select" name="priority">
-                <option value={PriorityLevel.Low}>Low</option>
-                <option value={PriorityLevel.Medium}>Medium</option>
-                <option value={PriorityLevel.High}>High</option>
-              </Field>
-            </LabelWrapper>
-            {props.touched.priority && props.errors.priority && (
-              <div id="feedback">{props.errors.priority}</div>
-            )}
+            <MyField label="Priority" name="priority">
+              {(props) => (
+                <select {...props}>
+                  <option value={PriorityLevel.Low}>Low</option>
+                  <option value={PriorityLevel.Medium}>Medium</option>
+                  <option value={PriorityLevel.High}>High</option>
+                </select>
+              )}
+            </MyField>
 
             <input type="submit" value="Add" disabled={props.isSubmitting} />
             <GraphQLErrors />
