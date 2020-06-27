@@ -1,16 +1,6 @@
 import React from "react";
 import { FieldInputProps, Field, FieldProps } from "formik";
-
-const LabelWrapper: React.FC<{ label: string; htmlFor: string }> = ({
-  label,
-  htmlFor,
-  children,
-}) => (
-  <label htmlFor={htmlFor}>
-    {label}
-    {children}
-  </label>
-);
+import { LabelWrapper } from "./LableWrapper";
 
 interface MyFieldProps {
   name: string;

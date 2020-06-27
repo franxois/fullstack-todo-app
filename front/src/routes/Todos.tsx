@@ -13,9 +13,27 @@ import {
 } from "react-icons/fc";
 import { Formik, Form } from "formik";
 import "./Main.scss";
-import { MyField } from "./MyField";
+import { MyField } from "../components/forms/MyField";
 
-const Main: React.FC = () => {
+type TodoFormValues = {
+  message: string;
+  priority: PriorityLevel;
+};
+
+const PriorityIcon: React.FC<{
+  level?: PriorityLevel | null;
+}> = ({ level }) => {
+  switch (level) {
+    case PriorityLevel.High:
+      return <FcHighPriority />;
+    case PriorityLevel.Medium:
+      return <FcMediumPriority />;
+    default:
+      return <FcLowPriority />;
+  }
+};
+
+export const Todos: React.FC = () => {
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
   const [addTodo, { error: errorNewTodo }] = useCreateTodoMutation();
   const [setTodoDone, { error: errorSetTotoDone }] = useSetTodoDoneMutation();
@@ -32,19 +50,6 @@ const Main: React.FC = () => {
       )}
     </div>
   );
-
-  const PriorityIcon: React.FC<{
-    level?: PriorityLevel | null;
-  }> = ({ level }) => {
-    switch (level) {
-      case PriorityLevel.High:
-        return <FcHighPriority />;
-      case PriorityLevel.Medium:
-        return <FcMediumPriority />;
-      default:
-        return <FcLowPriority />;
-    }
-  };
 
   const TodoList = () => (
     <ul className="todoList">
@@ -75,13 +80,8 @@ const Main: React.FC = () => {
     </ul>
   );
 
-  type TodoFormValues = {
-    message: string;
-    priority: PriorityLevel;
-  };
-
   return (
-    <main>
+    <>
       <Formik<TodoFormValues>
         initialValues={{
           message: "",
@@ -121,8 +121,6 @@ const Main: React.FC = () => {
         )}
       </Formik>
       <TodoList />
-    </main>
+    </>
   );
 };
-
-export default Main;
