@@ -1,34 +1,36 @@
 import React from "react";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
+import {
+  BreadcrumbProvider,
+  BreadcrumbPortal,
+  Breadcrumb,
+} from "../components/Breadcrumb";
 
-const Ini: React.FC = () => {
-  return <div>Ini</div>;
+const Base: React.FC = () => {
+  return (
+    <div>
+      {/* <Breadcrumb to="">Ini</Breadcrumb> */}
+      Page "base"
+    </div>
+  );
 };
-const A: React.FC = () => <div>A</div>;
-const B: React.FC = () => <div>B</div>;
+const A: React.FC = () => (
+  <div>
+    <Breadcrumb to="">A</Breadcrumb>
+    Page A
+  </div>
+);
+const B: React.FC = () => (
+  <div>
+    <Breadcrumb to="">B</Breadcrumb>
+    Page B
+  </div>
+);
 
 export const Paths: React.FC = () => {
-  let location = useLocation();
-
-  const urlSplit = location.pathname.split("/").filter((u) => u.length > 0);
-
-  console.log(urlSplit);
-
-  let breadCrumbsItems = [];
-  for (let i = 0; i < urlSplit.length; i++) {
-    console.log(urlSplit, urlSplit.slice(0, i));
-    breadCrumbsItems.push(
-      <Link
-        key={urlSplit.slice(1, i + 1).join("/")}
-        to={urlSplit.slice(1, i + 1).join("/")}
-      >
-        {urlSplit[i]}
-      </Link>
-    );
-  }
-
   return (
-    <>
+    <BreadcrumbProvider>
+      Menu :{" "}
       <nav>
         <ul>
           <li key="ini">
@@ -42,16 +44,14 @@ export const Paths: React.FC = () => {
           </li>
         </ul>
       </nav>
-      <nav>
-        {breadCrumbsItems.reduce((prev, curr) => (
-          <>{[prev, " > ", curr]}</>
-        ))}
-      </nav>
+      Breadcrumb :
+      <BreadcrumbPortal />
+      <Breadcrumb to="">Paths</Breadcrumb>
       <Routes>
-        <Route path="/" element={<Ini />} />
+        <Route path="/" element={<Base />} />
         <Route path="a" element={<A />} />
         <Route path="b" element={<B />} />
       </Routes>
-    </>
+    </BreadcrumbProvider>
   );
 };

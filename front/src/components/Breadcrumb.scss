@@ -1,0 +1,9 @@
+nav.breadcrumb {
+  li:after {
+    content: " >";
+  }
+
+  li:last-of-type:after {
+    content: none;
+  }
+}
