@@ -11,3 +11,6 @@ generates:
       withHooks: true
       withHOC: false
       withComponent: false
+  output.ts:
+    plugins:
+      - my-plugin.js
