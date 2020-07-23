@@ -15,24 +15,19 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
-  back:
-    build:
-      context: ./back
+  hasura:
+    image: hasura/graphql-engine:v1.3.0.cli-migrations-v2
     restart: unless-stopped
+    volumes:
+      - ./hasura/metadata:/hasura-metadata
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db"
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres"
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_CORS_DOMAIN: "http://localhost:3000"
     ports:
-      - 4000:4000
+      - 5000:8080
   adminer:
     image: adminer
     restart: unless-stopped
     ports:
       - 8080:8080
-  # hasura:
-  #   image: hasura/graphql-engine:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     HASURA_GRAPHQL_DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres"
-  #     HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-  #   ports:
-  #     - 4080:8080

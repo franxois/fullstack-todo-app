@@ -4,7 +4,7 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import Main from "./routes/Main";
 import { BrowserRouter } from "react-router-dom";
 
-const GRAPHQL_BACKEND_URL = "http://localhost:4000/graphql";
+const GRAPHQL_BACKEND_URL = "http://localhost:5000/v1beta1/relay";
 
 const client = new ApolloClient({
   uri: GRAPHQL_BACKEND_URL,

@@ -1,9 +1,8 @@
 import React from "react";
 import {
   useAllTodosQuery,
-  useCreateTodoMutation,
   useSetTodoDoneMutation,
-  PriorityLevel,
+  useInsertTodoMutation,
 } from "../graphql/generated";
 import {
   FcHighPriority,
@@ -17,16 +16,16 @@ import { MyField } from "../components/forms/MyField";
 
 type TodoFormValues = {
   message: string;
-  priority: PriorityLevel;
+  priority: "LOW" | "MEDIUM" | "HIGH";
 };
 
 const PriorityIcon: React.FC<{
-  level?: PriorityLevel | null;
+  level?: string | null;
 }> = ({ level }) => {
   switch (level) {
-    case PriorityLevel.High:
+    case "HIGH":
       return <FcHighPriority />;
-    case PriorityLevel.Medium:
+    case "MEDIUM":
       return <FcMediumPriority />;
     default:
       return <FcLowPriority />;
@@ -35,7 +34,7 @@ const PriorityIcon: React.FC<{
 
 export const Todos: React.FC = () => {
   const { data: todos, refetch: refreshTodo } = useAllTodosQuery();
-  const [addTodo, { error: errorNewTodo }] = useCreateTodoMutation();
+  const [addTodo, { error: errorNewTodo }] = useInsertTodoMutation();
   const [setTodoDone, { error: errorSetTotoDone }] = useSetTodoDoneMutation();
 
   const GraphQLErrors = () => (
@@ -53,25 +52,26 @@ export const Todos: React.FC = () => {
 
   const TodoList = () => (
     <ul className="todoList">
-      {todos?.allTodos?.nodes.map((t) => {
-        if (t) {
-          if (t.done) {
+      {todos?.todos_connection?.edges.map(({ node }) => {
+        if (node) {
+          if (node.done) {
             return (
-              <li key={t.id}>
-                <FcCheckmark /> {t.message}
+              <li key={node.todo_id}>
+                <FcCheckmark /> {node.message}
               </li>
             );
           } else {
             return (
               <li
-                key={t.id}
+                key={node.todo_id}
                 onClick={async () => {
-                  await setTodoDone({ variables: { id: t.id } });
+                  console.log(node);
+                  await setTodoDone({ variables: { _eq: node.todo_id } });
                 }}
                 className="doable"
               >
-                <PriorityIcon level={t.priority} /> {t.message} ( since{" "}
-                {new Date(t.createdAt).toLocaleString()})
+                <PriorityIcon level={node.priority} /> {node.message} ( since{" "}
+                {new Date(node.created_at).toLocaleString()})
               </li>
             );
           }
@@ -85,7 +85,7 @@ export const Todos: React.FC = () => {
       <Formik<TodoFormValues>
         initialValues={{
           message: "",
-          priority: PriorityLevel.Low,
+          priority: "LOW",
         }}
         onSubmit={async (values, formikHelper) => {
           try {
@@ -108,9 +108,9 @@ export const Todos: React.FC = () => {
             <MyField label="Priority" name="priority">
               {(props) => (
                 <select {...props}>
-                  <option value={PriorityLevel.Low}>Low</option>
-                  <option value={PriorityLevel.Medium}>Medium</option>
-                  <option value={PriorityLevel.High}>High</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
                 </select>
               )}
             </MyField>

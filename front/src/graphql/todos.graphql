@@ -1,26 +1,31 @@
+# Important : think to return id with mutations so apollo can refresh local cache
+
 query allTodos {
-  allTodos(orderBy: CREATED_AT_DESC) {
-    nodes {
-      id
-      priority
-      createdAt
-      message
-      done
+  todos_connection(order_by: { created_at: desc }) {
+    edges {
+      node {
+        id
+        todo_id
+        priority
+        created_at
+        message
+        done
+      }
     }
   }
 }
 
-mutation createTodo($message: String!, $priority: PriorityLevel!) {
-  createTodo(input: { todo: { message: $message, priority: $priority } }) {
-    todo {
+mutation insertTodo($priority: priority_level, $message: String) {
+  insert_todos(objects: { message: $message, priority: $priority }) {
+    returning {
       id
     }
   }
 }
 
-mutation setTodoDone($id: Int!) {
-  updateTodoById(input: { todoPatch: { done: true }, id: $id }) {
-    todo {
+mutation setTodoDone($_eq: Int!) {
+  update_todos(_set: { done: true }, where: { todo_id: { _eq: $_eq } }) {
+    returning {
       id
       done
     }
